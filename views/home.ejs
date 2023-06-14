@@ -1,34 +1,82 @@
-<!-- views/index.ejs -->
-
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>CSV File Upload</title>
-    <!-- Include CSS and any required libraries -->
-    <link rel="stylesheet" href="/styles.css">
+  <title>CSV File Upload</title>
+  <!-- Add any necessary stylesheets -->
 </head>
 <body>
-    <h1>CSV File Upload</h1>
-
-    <!-- File upload form -->
-    <form action="/upload" method="POST" enctype="multipart/form-data">
-        <input type="file" name="csvFile">
-        <input type="submit" value="Upload">
-    </form>
-
-    <h2>Uploaded CSV Files:</h2>
-    <% if (files.length === 0) { %>
-        <p>No files uploaded yet.</p>
-    <% } else { %>
-        <ul>
-            <% files.forEach(function(file) { %>
-                <li><a href="/file/<%= file.filename %>"><%= file.originalname %></a></li>
+  <h1>CSV File Upload</h1>
+  
+  <!-- Display list of uploaded CSV files -->
+  <h2>List of Uploaded CSV Files</h2>
+  <ul>
+    <% files.forEach(function(file) { %>
+      <li><%= file.name %></li>
+    <% }); %>
+  </ul>
+  
+  <!-- Upload CSV file form -->
+  <h2>Upload CSV File</h2>
+  <form action="/upload" method="post" enctype="multipart/form-data">
+    <input type="file" name="csvFile">
+    <button type="submit">Upload</button>
+  </form>
+   <!-- Search box -->
+   <h2>Search</h2>
+   <input type="text" id="searchInput" oninput="searchTable()" placeholder="Search...">
+  <!-- Display CSV data table -->
+  <% console.log(data) %>
+  <% if (data && data.length > 0) { %>
+    <h2>CSV Data</h2>
+    <table>
+        <thead>
+            <tr>
+              <% data[0].forEach(function(column) { %>
+                <th><%= column %></th>
+              <% }); %>
+            </tr>
+          </thead>
+          
+      <tbody>
+        <% data.slice(1).forEach(function(row) { %>
+          <tr>
+            <% row.forEach(function(cell) { %>
+              <td><%= cell %></td>
             <% }); %>
-        </ul>
-    <% } %>
-
-    <!-- Include any required JavaScript libraries -->
-    <script src="/script.js"></script>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  <% } else { %>
+    <h2>No CSV Data Available</h2>
+  <% } %>
+  
+ 
+  
+  <!-- Add any necessary JavaScript code -->
+  <script>
+    function searchTable() {
+      var input = document.getElementById('searchInput');
+      var filter = input.value.toUpperCase();
+      var table = document.getElementsByTagName('table')[0];
+      var rows = table.getElementsByTagName('tr');
+      
+      for (var i = 0; i < rows.length; i++) {
+        var cells = rows[i].getElementsByTagName('td');
+        var visible = false;
+        
+        for (var j = 0; j < cells.length; j++) {
+          var cell = cells[j];
+          
+          if (cell.innerHTML.toUpperCase().indexOf(filter) > -1) {
+            visible = true;
+            break;
+          }
+        }
+        
+        rows[i].style.display = visible ? '' : 'none';
+      }
+    }
+  </script>
 </body>
 </html>
